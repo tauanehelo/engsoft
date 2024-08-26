@@ -1,7 +1,11 @@
 public class RegraPosGraduacao implements RegraEmprestimo {
     @Override
-    public int calcularPrazoEmprestimo() {
+    public int prazoEmprestimo() {
         return 5;
+    }
+    @Override
+    public int limiteEmprestimosEmAberto() {
+        return 4;
     }
     
     @Override

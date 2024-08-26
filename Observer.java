@@ -1,5 +1,5 @@
 public interface Observer {
-    void notificar(String mensagem);
+    void notificar();
     int getNotificacoes();
 }
 

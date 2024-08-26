@@ -19,7 +19,7 @@ public class Comunicacao {
         return scanner.nextLine();
     }
 
-    public void getOutput(String mensagem) {
+    public void setOutput(String mensagem) {
         System.out.println(mensagem);
     }
 
@@ -28,7 +28,8 @@ public class Comunicacao {
         String[] partes = comando.split(" ");
         
         if (partes.length < 3) {
-            getOutput("Comando inválido.");
+            setOutput("Comando inválido.");
+            this.processarComando( sistema);
             return;
         }
 
@@ -36,26 +37,29 @@ public class Comunicacao {
         String codigoUsuario = partes[1];
         String codigoLivro = partes[2];
 
-        if (usuario == null) {
-            getOutput("Usuário não encontrado.");
+        if (codigoUsuario == null) {
+            setOutput("Usuário não encontrado.");
+            this.processarComando( sistema);
             return;
         }
-        if (livro == null) {
-            getOutput("Livro não encontrado.");
+        if (codigoLivro == null) {
+            setOutput("Livro não encontrado.");
+            this.processarComando( sistema);
             return;
         }
 
         switch (acao) {
             case "dev":
-                sistema.executarDevolucao(usuario, livro);
-                break;
+                sistema.executarDevolucao(codigoUsuario, codigoLivro);
+ 
             case "res":
-                sistema.executarReserva(usuario, livro);
-                break;
+                sistema.executarReserva(codigoUsuario, codigoLivro);
+
             default:
-                getOutput("Comando desconhecido.");
-                break;
+                setOutput("Comando desconhecido.");
+
         }
+        this.processarComando( sistema);
     }
 }
 

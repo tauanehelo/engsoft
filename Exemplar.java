@@ -2,22 +2,36 @@ public class Exemplar {
     private Livro livro;
     private String codigoExemplar;
     private String status;
+    private Usuario detentor;
 
-    public Exemplar(Livro livro, String codigoExemplar, String status) {
+    public Exemplar(Livro livro, String codigoExemplar) {
         this.livro = livro;
         this.codigoExemplar = codigoExemplar;
-        this.status = status;
+        this.status = "Disponivel";
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void emprestar(Usuario usuario){
+        this.status = "Emprestado";
+        this.detentor = usuario;
+    }
+    public void devolver(){
+        this.status = "Disponivel";
+        this.detentor = null;
+    }
+    
+    public Usuario getDetentor() {
+        return detentor;
     }
 
     public String getStatus() {
-        return status;
+        return this.status;
     }
 
     public String getCodigoExemplar() {
-        return codigoExemplar;
+        return this.codigoExemplar;
+    }
+    
+    public Livro getLivro(){
+        return this.livro;
     }
 }

@@ -1,4 +1,5 @@
 public interface RegraEmprestimo {
-    int calcularPrazoEmprestimo();
+    int prazoEmprestimo();
+    int limiteEmprestimosEmAberto();
     boolean validarEmprestimo();
 }

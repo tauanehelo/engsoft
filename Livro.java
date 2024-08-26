@@ -8,22 +8,16 @@ public class Livro {
     private List<String> autores;
     private String edicao;
     private String anoPublicacao;
-    private List<Exemplar> exemplares;
     private List<Observer> observadores;
-    private List<Usuario> usuariosReservaram;
-    private List<Exemplar> exemplaresEmprestados;
 
     public Livro(String codigo, String titulo, String editora, List<String> autores, String edicao, String anoPublicacao) {
         this.codigo = codigo;
         this.titulo = titulo;
         this.editora = editora;
-        this.autores = new ArrayList<>();
+        this.autores = autores;
         this.edicao = edicao;
         this.anoPublicacao = anoPublicacao;
-        this.exemplares = new ArrayList<>();
         this.observadores = new ArrayList<>();
-        this.usuariosReservaram = new ArrayList<>();
-        this.exemplaresEmprestados = new ArrayList<>();
         
     }
 
@@ -37,7 +31,7 @@ public class Livro {
 
     public void notificarObservadores(String mensagem) {
         for (Observer observer : observadores) {
-            observer.notificar(mensagem);
+            observer.notificar();
         }
     }
 
@@ -47,17 +41,5 @@ public class Livro {
 
     public String getTitulo() {
         return titulo;
-    }
-
-    public List<Exemplar> getExemplares() {
-        return exemplares;
-    }
-
-    public List<Usuario> getUsuariosReservaram() {
-        return usuariosReservaram;
-    }
-
-    public void adicionarExemplaresEmprestados(Exemplar exemplar) {
-        exemplares.add(exemplar);
     }
 }
