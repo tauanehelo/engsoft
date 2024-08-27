@@ -12,12 +12,12 @@ public class Sistema {
         this.livros = livros;
         this.exemplares = exemplares;
         this.usuarios = usuarios;
-        this.reservas = new ArrayList<Reserva>();
+        this.reservas = new ArrayList<>();
     }
 
     private Usuario getUsuarioByCodigo(String codigoUsuario){
         for (Usuario usuario : this.usuarios){
-            if (codigoUsuario == usuario.getCodigoUsuario()){
+            if (codigoUsuario.equals(usuario.getCodigoUsuario())){
                 return usuario;
             }
         }
@@ -25,7 +25,7 @@ public class Sistema {
     }
     private Livro getLivroByCodigo(String codigoLivro){
         for (Livro livro : this.livros){
-            if (codigoLivro == livro.getCodigo()){
+            if (codigoLivro.equals(livro.getCodigo())){
                 return livro;
             }
         }
@@ -33,7 +33,7 @@ public class Sistema {
     }
 
     private List<Exemplar> getExemplaresByLivro(Livro livro){
-        List<Exemplar> listaDeExemplares = new ArrayList<Exemplar>();
+        List<Exemplar> listaDeExemplares = new ArrayList<>();
         for (Exemplar exemplar : this.exemplares){
             if (livro == exemplar.getLivro()){
                 listaDeExemplares.add(exemplar);
@@ -76,7 +76,6 @@ public class Sistema {
     
 
     public void guardarEmprestimo(Usuario usuario, Livro livro) {
-        // falta fazer as condições todas de emprestimo kkkkk
         for (Exemplar exemplar : getExemplaresByLivro(livro)) {
             if (exemplar.getStatus().equals("Disponivel")) {
                 exemplar.emprestar(usuario);
@@ -97,7 +96,7 @@ public class Sistema {
         }
 
         System.out.println("Título: " + livro.getTitulo());
-        List<Usuario> usuariosReservaram = new ArrayList<Usuario>();
+        List<Usuario> usuariosReservaram = new ArrayList<>();
         for (Reserva reserva : this.reservas) {
             if (reserva.getLivro().equals(livro)){
                 usuariosReservaram.add(reserva.getUsuario());
@@ -145,11 +144,20 @@ public class Sistema {
         }
     }
 
-    public void consultaProfessor(Professor professor) {
-        //implementação da consulta de professores
+    public void consultaProfessor(String codigoUsuario) {
+        Usuario usuario = getUsuarioByCodigo(codigoUsuario);
+
+        if (usuario == null) {
+            comunicacao.setOutput("Professor não encontrado.");
+            return;
+        }
+
+        if (usuario instanceof Professor professor) {
+            int numeroNotificacoes = professor.getNotificacoes();
+            comunicacao.setOutput("O professor " + professor.getNome() + " foi notificado " + numeroNotificacoes + " vezes.");
+        } else {
+            comunicacao.setOutput("Usuário não é um professor.");
+        }
     }
 
-    public void sair() {
-        //implementação de encerramento do sistema
-    }
 }

@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class Comunicacao {
     private static Comunicacao instance;
-    private Scanner scanner;
+    private final Scanner scanner;
 
     private Comunicacao() {
         this.scanner = new Scanner(System.in);
@@ -54,19 +54,14 @@ public class Comunicacao {
         }
 
         switch (acao) {
-            case "dev":
-                sistema.executarDevolucao(codigoUsuario, codigoLivro);
- 
-            case "res":
-                sistema.executarReserva(codigoUsuario, codigoLivro);
-
-            case "usu":
-                sistema.consultaUsuario(codigoUsuario);
-
-            default:
-                setOutput("Comando desconhecido.");
+            case "dev" -> sistema.executarDevolucao(codigoUsuario, codigoLivro);
+            case "res" -> sistema.executarReserva(codigoUsuario, codigoLivro);
+            case "usu" -> sistema.consultaUsuario(codigoUsuario);
+            case "ntf" -> sistema.consultaProfessor(codigoUsuario);
+            default -> setOutput("Comando desconhecido.");
 
         }
+        
         this.processarComando( sistema);
     }
 }

@@ -3,5 +3,3 @@ public interface Observer {
     int getNotificacoes();
 }
 
-//void adicionarObserver(Observer observer);
-//void removerObserver(Observer observer);
