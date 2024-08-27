@@ -2,11 +2,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Sistema {
-    private List<Livro> livros;
-    private List<Exemplar> exemplares;
-    private List<Usuario> usuarios;
-    private List<Reserva> reservas;
-    private Comunicacao comunicacao = Comunicacao.getInstance();
+    private final List<Livro> livros;
+    private final List<Exemplar> exemplares;
+    private final List<Usuario> usuarios;
+    private final List<Reserva> reservas;
+    private final Comunicacao comunicacao = Comunicacao.getInstance();
 
     public Sistema(List<Livro> livros, List<Exemplar> exemplares, List<Usuario> usuarios) {
         this.livros = livros;

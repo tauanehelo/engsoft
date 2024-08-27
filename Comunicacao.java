@@ -62,7 +62,7 @@ public class Comunicacao {
 
         }
         
-        this.processarComando( sistema);
+        this.processarComando(sistema);
     }
 }
 

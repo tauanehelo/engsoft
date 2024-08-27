@@ -2,12 +2,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Livro {
-    private String codigo;
-    private String titulo;
-    private String editora;
-    private List<String> autores;
-    private String edicao;
-    private String anoPublicacao;
+    private final String codigo;
+    private final String titulo;
+    private final String editora;
+    private final List<String> autores;
+    private final String edicao;
+    private final String anoPublicacao;
     private List<Observer> observadores;
 
     public Livro(String codigo, String titulo, String editora, List<String> autores, String edicao, String anoPublicacao) {

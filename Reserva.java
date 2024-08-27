@@ -1,9 +1,9 @@
 import java.util.Date;
 
 public class Reserva {
-    private Livro livro;
-    private Usuario usuario;
-    private Date dataReserva;
+    private final Livro livro;
+    private final Usuario usuario;
+    private final Date dataReserva;
 
     public Reserva(Livro livro, Usuario usuario){
         this.livro = livro;
