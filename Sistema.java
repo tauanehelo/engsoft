@@ -120,8 +120,29 @@ public class Sistema {
         //implementação da consulta de livros
     }
 
-    public void consultaUsuario(Usuario usuario) {
-        //implementação da consulta de usuários
+    public void consultaUsuario(String codigoUsuario) {
+        Usuario usuario = getUsuarioByCodigo(codigoUsuario);
+    
+        if (usuario == null) {
+            comunicacao.setOutput("Usuário não encontrado.");
+            return;
+        }
+
+        comunicacao.setOutput("Empréstimos:");
+        for (Exemplar exemplar : this.exemplares) {
+            if (exemplar.getDetentor() != null && exemplar.getDetentor().equals(usuario)) {
+                String status = exemplar.isEmprestado() ? "Em curso" : "Finalizado";
+                String dataDevolucao = exemplar.getDataDevolucao() != null ? exemplar.getDataDevolucao().toString() : "Não definida";
+                comunicacao.setOutput("Livro: " + exemplar.getLivro().getTitulo() + ", Data do Empréstimo: " + exemplar.getDataEmprestimo() + ", Status: " + status + ", Data de Devolução: " + dataDevolucao);
+            }
+        }
+
+        comunicacao.setOutput("Reservas:");
+        for (Reserva reserva : this.reservas) {
+            if (reserva.getUsuario().equals(usuario)) {
+                comunicacao.setOutput("Livro: " + reserva.getLivro().getTitulo() + ", Data da Reserva: " + reserva.getDataReserva());
+            }
+        }
     }
 
     public void consultaProfessor(Professor professor) {

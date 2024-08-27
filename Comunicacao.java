@@ -27,7 +27,12 @@ public class Comunicacao {
         String comando = getInput();
         String[] partes = comando.split(" ");
         
-        if (partes.length < 3) {
+        if (comando.equals("sai")) {
+            setOutput("Sistema encerrado.");
+            System.exit(0);
+        }
+
+        if (partes.length < 2) {
             setOutput("Comando inválido.");
             this.processarComando( sistema);
             return;
@@ -35,7 +40,7 @@ public class Comunicacao {
 
         String acao = partes[0];
         String codigoUsuario = partes[1];
-        String codigoLivro = partes[2];
+        String codigoLivro = partes.length > 2 ? partes[2] : null;
 
         if (codigoUsuario == null) {
             setOutput("Usuário não encontrado.");
@@ -54,6 +59,9 @@ public class Comunicacao {
  
             case "res":
                 sistema.executarReserva(codigoUsuario, codigoLivro);
+
+            case "usu":
+                sistema.consultaUsuario(codigoUsuario);
 
             default:
                 setOutput("Comando desconhecido.");
