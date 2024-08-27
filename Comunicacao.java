@@ -39,25 +39,22 @@ public class Comunicacao {
         }
 
         String acao = partes[0];
-        String codigoUsuario = partes[1];
-        String codigoLivro = partes.length > 2 ? partes[2] : null;
+        String primeiroCodigo = partes[1];
+        String segundoCodigo = partes.length > 2 ? partes[2] : null;
 
-        if (codigoUsuario == null) {
-            setOutput("Usuário não encontrado.");
-            this.processarComando( sistema);
-            return;
-        }
-        if (codigoLivro == null) {
-            setOutput("Livro não encontrado.");
+        if (primeiroCodigo == null) {
+            setOutput("Usuário não informado.");
             this.processarComando( sistema);
             return;
         }
 
         switch (acao) {
-            case "dev" -> sistema.executarDevolucao(codigoUsuario, codigoLivro);
-            case "res" -> sistema.executarReserva(codigoUsuario, codigoLivro);
-            case "usu" -> sistema.consultaUsuario(codigoUsuario);
-            case "ntf" -> sistema.consultaProfessor(codigoUsuario);
+            case "dev" -> sistema.executarDevolucao(primeiroCodigo, segundoCodigo);
+            case "res" -> sistema.executarReserva(primeiroCodigo, segundoCodigo);
+            case "obs" -> sistema.cadastraObservador(primeiroCodigo, segundoCodigo);
+            case "liv" -> sistema.consultaLivro(primeiroCodigo);
+            case "usu" -> sistema.consultaUsuario(primeiroCodigo);
+            case "ntf" -> sistema.consultaProfessor(primeiroCodigo);
             default -> setOutput("Comando desconhecido.");
 
         }

@@ -44,26 +44,41 @@ public class Sistema {
 
     public void executarReserva(String codigoUsuario, String codigoLivro) {
         Usuario usuario = getUsuarioByCodigo(codigoUsuario);
-        Livro livro = getLivroByCodigo(codigoLivro);
-        int reservasDoUsuario = 0;
-        if (usuario != null && livro != null){
-            for (Reserva reserva : this.reservas) {
-                if (reserva.getUsuario().equals(usuario)){
-                    reservasDoUsuario++;
-                }
-            }
-            if (reservasDoUsuario == 3) {
-                comunicacao.setOutput("Reserva falhou. O usuário " + usuario.getNome() + " já tem 3 reservas.");
-                return;
-            }
-            this.reservas.add(new Reserva(livro, usuario));
-            comunicacao.setOutput("Reserva realizada com sucesso. Usuário: " + usuario.getNome() + ", Livro: " + livro.getTitulo());
+        if (usuario == null) {
+            comunicacao.setOutput("Usuario não encontrado.");
+            return;
         }
+        Livro livro = getLivroByCodigo(codigoLivro);
+        if (livro == null) {
+            comunicacao.setOutput("Livro não encontrado.");
+            return;
+        }
+        int reservasDoUsuario = 0;
+
+        for (Reserva reserva : this.reservas) {
+            if (reserva.getUsuario().equals(usuario)){
+                reservasDoUsuario++;
+            }
+        }
+        if (reservasDoUsuario == 3) {
+            comunicacao.setOutput("Reserva falhou. O usuário " + usuario.getNome() + " já tem 3 reservas.");
+            return;
+        }
+        this.reservas.add(new Reserva(livro, usuario));
+        comunicacao.setOutput("Reserva realizada com sucesso. Usuário: " + usuario.getNome() + ", Livro: " + livro.getTitulo());
     }
 
     public void executarDevolucao(String codigoUsuario, String codigoLivro) {
         Usuario usuario = getUsuarioByCodigo(codigoUsuario);
+        if (usuario == null) {
+            comunicacao.setOutput("Usuario não encontrado.");
+            return;
+        }
         Livro livro = getLivroByCodigo(codigoLivro);
+        if (livro == null) {
+            comunicacao.setOutput("Livro não encontrado.");
+            return;
+        }
         for (Exemplar exemplar : getExemplaresByLivro(livro)) {
             if (exemplar.getDetentor().equals(usuario)) {
                 exemplar.devolver();
@@ -74,6 +89,24 @@ public class Sistema {
         comunicacao.setOutput("Devolução falhou. Não há empréstimo em aberto para o usuário: " + usuario.getNome() + " e livro: " + livro.getTitulo());
     }
     
+    public void cadastraObservador(String codigoUsuario, String codigoLivro) {
+        Usuario usuario = getUsuarioByCodigo(codigoUsuario);
+        if (usuario == null) {
+            comunicacao.setOutput("Usuario não encontrado.");
+            return;
+        }
+        Livro livro = getLivroByCodigo(codigoLivro);
+        if (livro == null) {
+            comunicacao.setOutput("Livro não encontrado.");
+            return;
+        }
+        if (usuario instanceof Observer observador) {
+            livro.adicionarObservador(observador);
+            comunicacao.setOutput("Observador " + usuario.getNome() + " cadastrado com sucesso no livro: " + livro.getTitulo());
+        } else {
+            comunicacao.setOutput("Usuário não pode ser um observador.");
+        }
+    }
 
     public void guardarEmprestimo(Usuario usuario, Livro livro) {
         for (Exemplar exemplar : getExemplaresByLivro(livro)) {
@@ -91,32 +124,34 @@ public class Sistema {
         Livro livro = getLivroByCodigo(codigoLivro);
 
         if (livro == null) {
-            System.out.println("Livro não encontrado.");
+            comunicacao.setOutput("Livro não encontrado.");
             return;
         }
 
-        System.out.println("Título: " + livro.getTitulo());
+        comunicacao.setOutput("Título: " + livro.getTitulo());
         List<Usuario> usuariosReservaram = new ArrayList<>();
         for (Reserva reserva : this.reservas) {
             if (reserva.getLivro().equals(livro)){
                 usuariosReservaram.add(reserva.getUsuario());
             }
         }
-        System.out.println("Quantidade de Reservas: " + usuariosReservaram.size());
+        comunicacao.setOutput("Quantidade de Reservas: " + usuariosReservaram.size());
 
         if (!usuariosReservaram.isEmpty()) {
-            System.out.println("Usuários que realizaram reservas:");
+            comunicacao.setOutput("Usuários que realizaram reservas:");
             for (Usuario usuario : usuariosReservaram) {
-                System.out.println("- " + usuario.getNome());
+                comunicacao.setOutput("- " + usuario.getNome());
             }
         }
         
-        System.out.println("Exemplares:");
+        comunicacao.setOutput("Exemplares:");
 
         for (Exemplar exemplar : getExemplaresByLivro(livro)) {
-            System.out.println("Código: " + exemplar.getCodigoExemplar() + ", Status: " + exemplar.getStatus());
+            String texto = "- Código: " + exemplar.getCodigoExemplar() + ", Status: " + exemplar.getStatus();
+            // precisa terminar isso mas tenho que sair do estagio
+            texto += (exemplar.getStatus() == "Emprestado") ? "atualmente com (insira aqui usuario)" : "" ;
+            comunicacao.setOutput(texto);
         }
-        //implementação da consulta de livros
     }
 
     public void consultaUsuario(String codigoUsuario) {
