@@ -42,6 +42,40 @@ public class Sistema {
         return listaDeExemplares;
     }
 
+    public void executarEmprestimo(String codigoUsuario, String codigoLivro) {
+        Usuario usuario = getUsuarioByCodigo(codigoUsuario);
+        if (usuario == null) {
+            comunicacao.setOutput("Usuário não encontrado.");
+            return;
+        }
+        Livro livro = getLivroByCodigo(codigoLivro);
+        if (livro == null) {
+            comunicacao.setOutput("Livro não encontrado.");
+            return;
+        }
+
+        Reserva reservaRemover = null;
+        for (Reserva reserva : this.reservas) {
+            if (reserva.getUsuario().equals(usuario) && reserva.getLivro().equals(livro)) {
+                reservaRemover = reserva;
+                break;
+            }
+        }
+
+        if (reservaRemover != null) {
+            this.reservas.remove(reservaRemover);  
+        }
+
+        for (Exemplar exemplar : getExemplaresByLivro(livro)) {
+            if ("Disponivel".equals(exemplar.getStatus())) {
+                exemplar.emprestar(usuario);
+                comunicacao.setOutput("Empréstimo realizado com sucesso. Usuário: " + usuario.getNome() + ", Livro: " + livro.getTitulo());
+                return;
+            }
+        }
+        comunicacao.setOutput("Empréstimo falhou. Não há exemplares disponíveis para o livro: " + livro.getTitulo());
+    }
+
     public void executarReserva(String codigoUsuario, String codigoLivro) {
         Usuario usuario = getUsuarioByCodigo(codigoUsuario);
         if (usuario == null) {

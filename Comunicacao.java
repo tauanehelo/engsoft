@@ -55,6 +55,7 @@ public class Comunicacao {
             case "liv" -> sistema.consultaLivro(primeiroCodigo);
             case "usu" -> sistema.consultaUsuario(primeiroCodigo);
             case "ntf" -> sistema.consultaProfessor(primeiroCodigo);
+            case "emp" -> sistema.executarEmprestimo(primeiroCodigo, segundoCodigo);
             default -> setOutput("Comando desconhecido.");
 
         }
