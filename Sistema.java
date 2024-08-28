@@ -148,8 +148,12 @@ public class Sistema {
 
         for (Exemplar exemplar : getExemplaresByLivro(livro)) {
             String texto = "- Código: " + exemplar.getCodigoExemplar() + ", Status: " + exemplar.getStatus();
-            // precisa terminar isso mas tenho que sair do estagio
-            texto += (exemplar.getStatus() == "Emprestado") ? "atualmente com (insira aqui usuario)" : "" ;
+            
+            if ("Emprestado".equals(exemplar.getStatus())) {
+                texto += ", Atualmente com o usuário: " + exemplar.getDetentor().getNome() + 
+                         ", Data de Empréstimo: " + exemplar.getDataEmprestimo() + 
+                         ", Data de Devolução: " + exemplar.getDataDevolucao();
+            }
             comunicacao.setOutput(texto);
         }
     }

@@ -1,8 +1,8 @@
 import java.util.Date;
 
 public class Exemplar {
-    private Livro livro;
-    private String codigoExemplar;
+    private final Livro livro;
+    private final String codigoExemplar;
     private String status;
     private Usuario detentor;
     private Date dataEmprestimo;

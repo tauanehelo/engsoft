@@ -18,9 +18,20 @@ public class Main {
         AlunoPosGraduacao alunopg = new AlunoPosGraduacao("456", "Luiz Fernando Rodrigues");
         Professor professor = new Professor("100", "Carlos Lucena");
         
+        Exemplar exemplar1 = new Exemplar(livro1, "001");
+        Exemplar exemplar2 = new Exemplar(livro1, "002");
+        Exemplar exemplar3 = new Exemplar(livro2, "003");
+        Exemplar exemplar4 = new Exemplar(livro3, "004");
+        Exemplar exemplar5 = new Exemplar(livro4, "005");
+        Exemplar exemplar6 = new Exemplar(livro5, "006");
+        Exemplar exemplar7 = new Exemplar(livro5, "007");
+        Exemplar exemplar8 = new Exemplar(livro7, "008");
+        Exemplar exemplar9 = new Exemplar(livro7, "009");
+        
         List<Livro> livros = Arrays.asList(livro1, livro2, livro3, livro4, livro5, livro6, livro7, livro8);
         List<Usuario> usuarios = Arrays.asList(aluno1, aluno2, alunopg, professor);
-        List<Exemplar> exemplares = Arrays.asList(new Exemplar(livro1, "001"));
+        List<Exemplar> exemplares = Arrays.asList(exemplar1, exemplar2, exemplar3, exemplar4, exemplar5, exemplar6, exemplar7, exemplar8, exemplar9);
+        
         Sistema Sistema = new Sistema(livros, exemplares, usuarios);
         comunicacao.processarComando(Sistema);
     }
