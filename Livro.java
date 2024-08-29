@@ -22,11 +22,11 @@ public class Livro {
     }
 
     public void adicionarObservador(Observer observador) {
-        observadores.add(observador);
+        this.observadores.add(observador);
     }
 
     public void removerObservador(Observer observador) {
-        observadores.remove(observador);
+        this.observadores.remove(observador);
     }
 
     public void notificarObservadores() {

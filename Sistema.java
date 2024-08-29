@@ -98,9 +98,9 @@ public class Sistema {
     }
 
     public void executarReserva(String codigoUsuario, String codigoLivro) {
-        Usuario usuario = getUsuarioByCodigo(codigoUsuario);
+            Usuario usuario = getUsuarioByCodigo(codigoUsuario);
         if (usuario == null) {
-            comunicacao.setOutput("Usuario não encontrado.");
+            comunicacao.setOutput("Usuário não encontrado.");
             return;
         }
         Livro livro = getLivroByCodigo(codigoLivro);
@@ -122,7 +122,7 @@ public class Sistema {
 
         int reservasDoUsuario = 0;
         int reservasSimutaneas = 0;
-        
+
         for (Reserva reserva : this.reservas) {
             if (reserva.getUsuario().equals(usuario)){
                 reservasDoUsuario++;
@@ -136,14 +136,13 @@ public class Sistema {
             return;
         }
         if (reservasSimutaneas > 2){
-            livro.notificarObservadores();
+            livro.notificarObservadores(); 
         }
         Reserva novaReserva = new Reserva(livro, usuario);
         this.reservas.add(novaReserva);
         usuario.guardarReserva(novaReserva);
         comunicacao.setOutput("Reserva realizada com sucesso. Usuário: " + usuario.getNome() + ", Livro: " + livro.getTitulo());
     }
-
     public void executarDevolucao(String codigoUsuario, String codigoLivro) {
         Usuario usuario = getUsuarioByCodigo(codigoUsuario);
         if (usuario == null) {
