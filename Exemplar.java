@@ -8,7 +8,7 @@ public class Exemplar {
     public Exemplar(Livro livro, String codigoExemplar) {
         this.livro = livro;
         this.codigoExemplar = codigoExemplar;
-        this.status = "Disponivel";;
+        this.status = "Disponivel";
     }
 
     public void emprestar(Usuario usuario){
