@@ -108,9 +108,21 @@ public class Sistema {
             comunicacao.setOutput("Livro não encontrado.");
             return;
         }
+        Reserva reservaAntiga = null;
+        for (Reserva reserva : usuario.getReservasFeitas()) {
+            if (reserva.getLivro().equals(livro)) {
+                reservaAntiga = reserva;
+                break;
+            }
+        }
+
+        if (reservaAntiga != null) {
+            this.reservas.remove(reservaAntiga);
+        }
+
         int reservasDoUsuario = 0;
         int reservasSimutaneas = 0;
-
+        
         for (Reserva reserva : this.reservas) {
             if (reserva.getUsuario().equals(usuario)){
                 reservasDoUsuario++;
@@ -126,8 +138,9 @@ public class Sistema {
         if (reservasSimutaneas > 2){
             livro.notificarObservadores();
         }
-        this.reservas.add(new Reserva(livro, usuario));
-        usuario.guardarReserva(new Reserva(livro, usuario));
+        Reserva novaReserva = new Reserva(livro, usuario);
+        this.reservas.add(novaReserva);
+        usuario.guardarReserva(novaReserva);
         comunicacao.setOutput("Reserva realizada com sucesso. Usuário: " + usuario.getNome() + ", Livro: " + livro.getTitulo());
     }
 
