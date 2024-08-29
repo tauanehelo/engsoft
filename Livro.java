@@ -29,7 +29,7 @@ public class Livro {
         observadores.remove(observador);
     }
 
-    public void notificarObservadores(String mensagem) {
+    public void notificarObservadores() {
         for (Observer observer : observadores) {
             observer.notificar();
         }

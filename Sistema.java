@@ -53,27 +53,49 @@ public class Sistema {
             comunicacao.setOutput("Livro não encontrado.");
             return;
         }
-
+        int reservasLivro = 0;
         Reserva reservaRemover = null;
         for (Reserva reserva : this.reservas) {
-            if (reserva.getUsuario().equals(usuario) && reserva.getLivro().equals(livro)) {
-                reservaRemover = reserva;
-                break;
+            if (reserva.getLivro().equals(livro)){
+                reservasLivro++;
+                if (reservaRemover == null && reserva.getUsuario().equals(usuario)) {
+                    reservaRemover = reserva;
+                }
             }
         }
-
-        if (reservaRemover != null) {
-            this.reservas.remove(reservaRemover);  
-        }
-
+        int exemplaresDisponiveis = 0;
+        Exemplar exemplarDisponivel = null;
         for (Exemplar exemplar : getExemplaresByLivro(livro)) {
             if ("Disponivel".equals(exemplar.getStatus())) {
-                exemplar.emprestar(usuario);
-                comunicacao.setOutput("Empréstimo realizado com sucesso. Usuário: " + usuario.getNome() + ", Livro: " + livro.getTitulo());
-                return;
+                exemplarDisponivel = exemplar;
+                exemplaresDisponiveis++;
             }
         }
-        comunicacao.setOutput("Empréstimo falhou. Não há exemplares disponíveis para o livro: " + livro.getTitulo());
+        if (exemplarDisponivel == null){
+            comunicacao.setOutput("Empréstimo falhou. Não há exemplares disponíveis para o livro: " + livro.getTitulo());
+        } else if (usuario.isDevedor()) {
+            comunicacao.setOutput("Empréstimo falhou. O usuário está com livro em atraso.");
+        } else if(usuario instanceof Professor) {
+            if (reservaRemover != null ) {
+                this.reservas.remove(reservaRemover);
+            }
+            exemplarDisponivel.emprestar(usuario);
+            usuario.guardarEmprestimo(new Emprestimo(livro, usuario));
+            comunicacao.setOutput("Empréstimo realizado com sucesso. Usuário: " + usuario.getNome() + ", Livro: " + livro.getTitulo());
+        } else {
+            if (!usuario.podePegarEmprestimo()){
+                comunicacao.setOutput("Empréstimo falhou. O usuário já está com o limite de emprestimos em aberto.");
+            } else if (reservaRemover == null && exemplaresDisponiveis < reservasLivro) {
+                comunicacao.setOutput("Empréstimo falhou. O numero de Exemplares disponiveis é menor que o número de reservas e o usuario não tem uma reserva.");
+            } else if (usuario.hasEmprestimoAberto(livro)) {
+                comunicacao.setOutput("Empréstimo falhou. O usuário já está com um emprestimo do Livro:" + livro.getTitulo());
+            } else {
+                this.reservas.remove(reservaRemover);
+                exemplarDisponivel.emprestar(usuario);
+                usuario.guardarEmprestimo(new Emprestimo(livro, usuario));
+                comunicacao.setOutput("Empréstimo realizado com sucesso. Usuário: " + usuario.getNome() + ", Livro: " + livro.getTitulo());
+            }
+        }
     }
 
     public void executarReserva(String codigoUsuario, String codigoLivro) {
@@ -88,17 +110,25 @@ public class Sistema {
             return;
         }
         int reservasDoUsuario = 0;
+        int reservasSimutaneas = 0;
 
         for (Reserva reserva : this.reservas) {
             if (reserva.getUsuario().equals(usuario)){
                 reservasDoUsuario++;
             }
+            if (reserva.getLivro().equals(livro)){
+                reservasSimutaneas++;
+            }
         }
         if (reservasDoUsuario == 3) {
-            comunicacao.setOutput("Reserva falhou. O usuário " + usuario.getNome() + " já tem 3 reservas.");
+            comunicacao.setOutput("Reserva falhou. O usuário " + usuario.getNome() + " já tem 3 reservas ativas.");
             return;
         }
+        if (reservasSimutaneas > 2){
+            livro.notificarObservadores();
+        }
         this.reservas.add(new Reserva(livro, usuario));
+        usuario.guardarReserva(new Reserva(livro, usuario));
         comunicacao.setOutput("Reserva realizada com sucesso. Usuário: " + usuario.getNome() + ", Livro: " + livro.getTitulo());
     }
 
@@ -116,6 +146,7 @@ public class Sistema {
         for (Exemplar exemplar : getExemplaresByLivro(livro)) {
             if (exemplar.getDetentor().equals(usuario)) {
                 exemplar.devolver();
+                usuario.devolverEmprestimo(livro);
                 comunicacao.setOutput("Devolução realizada com sucesso. Usuário: " + usuario.getNome() + ", Livro: " + livro.getTitulo());
                 return;
             }
@@ -140,18 +171,6 @@ public class Sistema {
         } else {
             comunicacao.setOutput("Usuário não pode ser um observador.");
         }
-    }
-
-    public void guardarEmprestimo(Usuario usuario, Livro livro) {
-        for (Exemplar exemplar : getExemplaresByLivro(livro)) {
-            if (exemplar.getStatus().equals("Disponivel")) {
-                exemplar.emprestar(usuario);
-                comunicacao.setOutput("Emprestimo realizado com sucesso. Usuário: " + usuario.getNome() + ", Livro: " + livro.getTitulo());
-                return;
-            }
-        }
-        comunicacao.setOutput("Emprestimo falhou. Não há empréstimo em aberto para o usuário: " + usuario.getNome() + " e livro: " + livro.getTitulo());
-
     }
 
     public void consultaLivro(String codigoLivro) {
@@ -185,8 +204,8 @@ public class Sistema {
             
             if ("Emprestado".equals(exemplar.getStatus())) {
                 texto += ", Atualmente com o usuário: " + exemplar.getDetentor().getNome() + 
-                         ", Data de Empréstimo: " + exemplar.getDataEmprestimo() + 
-                         ", Data de Devolução: " + exemplar.getDataDevolucao();
+                         ", Data de Empréstimo: " + exemplar.getDetentor().consultaDataEmprestimo(livro) +
+                         ", Data de Devolução: " +  exemplar.getDetentor().consultaDataDevolucao(livro);
             }
             comunicacao.setOutput(texto);
         }
@@ -201,19 +220,14 @@ public class Sistema {
         }
 
         comunicacao.setOutput("Empréstimos:");
-        for (Exemplar exemplar : this.exemplares) {
-            if (exemplar.getDetentor() != null && exemplar.getDetentor().equals(usuario)) {
-                String status = exemplar.isEmprestado() ? "Em curso" : "Finalizado";
-                String dataDevolucao = exemplar.getDataDevolucao() != null ? exemplar.getDataDevolucao().toString() : "Não definida";
-                comunicacao.setOutput("Livro: " + exemplar.getLivro().getTitulo() + ", Data do Empréstimo: " + exemplar.getDataEmprestimo() + ", Status: " + status + ", Data de Devolução: " + dataDevolucao);
-            }
+        for (Emprestimo emprestimo : usuario.getEmprestimosFeitos()) {
+            String dataDevolucao = emprestimo.getDataDevolucao() != null ? emprestimo.getDataDevolucao().toString() : "Não definida";
+            comunicacao.setOutput("Livro: " + emprestimo.getLivro().getTitulo() + ", Data do Empréstimo: " + emprestimo.getDataEmprestimo() + ", Status: " + emprestimo.getStatus() + ", Data de Devolução: " + dataDevolucao);
         }
 
         comunicacao.setOutput("Reservas:");
-        for (Reserva reserva : this.reservas) {
-            if (reserva.getUsuario().equals(usuario)) {
-                comunicacao.setOutput("Livro: " + reserva.getLivro().getTitulo() + ", Data da Reserva: " + reserva.getDataReserva());
-            }
+        for (Reserva reserva : usuario.getReservasFeitas()) {
+            comunicacao.setOutput("Livro: " + reserva.getLivro().getTitulo() + ", Data da Reserva: " + reserva.getDataReserva());
         }
     }
 
