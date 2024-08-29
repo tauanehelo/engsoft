@@ -63,12 +63,11 @@ public class Sistema {
                 }
             }
         }
-        int exemplaresDisponiveis = 0;
+        
         Exemplar exemplarDisponivel = null;
         for (Exemplar exemplar : getExemplaresByLivro(livro)) {
             if ("Disponivel".equals(exemplar.getStatus())) {
                 exemplarDisponivel = exemplar;
-                exemplaresDisponiveis++;
             }
         }
         if (exemplarDisponivel == null){
@@ -85,7 +84,7 @@ public class Sistema {
         } else {
             if (!usuario.podePegarEmprestimo()){
                 comunicacao.setOutput("Empréstimo falhou. O usuário já está com o limite de emprestimos em aberto.");
-            } else if (reservaRemover == null && exemplaresDisponiveis < reservasLivro) {
+            } else if (reservaRemover == null && reservasLivro >= getExemplaresByLivro(livro).size()) {
                 comunicacao.setOutput("Empréstimo falhou. O numero de Exemplares disponiveis é menor que o número de reservas e o usuario não tem uma reserva.");
             } else if (usuario.hasEmprestimoAberto(livro)) {
                 comunicacao.setOutput("Empréstimo falhou. O usuário já está com um emprestimo do Livro:" + livro.getTitulo());
@@ -144,7 +143,7 @@ public class Sistema {
             return;
         }
         for (Exemplar exemplar : getExemplaresByLivro(livro)) {
-            if (exemplar.getDetentor().equals(usuario)) {
+            if (exemplar.getDetentor() != null && exemplar.getDetentor().equals(usuario)) {
                 exemplar.devolver();
                 usuario.devolverEmprestimo(livro);
                 comunicacao.setOutput("Devolução realizada com sucesso. Usuário: " + usuario.getNome() + ", Livro: " + livro.getTitulo());
